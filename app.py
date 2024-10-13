@@ -7,7 +7,12 @@ app = Dash()
 
 app.layout = [
     html.H1(children='Pink Morsel Sales', style={'textAlign':'center'}),
-    dcc.Dropdown(df.Region.unique(), 'north', id='region-selection'),
+    dcc.RadioItems(
+        list(df.Region.unique()) + ['all'], 
+        df.Region.unique()[0], 
+        id='region-selection',
+        style={'display': 'flex', 'justifyContent': 'center'}
+        ),
     dcc.Graph(id='graph-content')
 ]
 
@@ -17,8 +22,12 @@ app.layout = [
     Input("region-selection", "value"),
 )
 def update_graph(region):
-    dff = df[df.Region==region]
+    if region == 'all':
+        dff = df
+    else:
+        dff = df[df.Region==region]
     fig = px.line(dff, x='Date', y='Sales')
+    fig.update_traces(line_color='#F23127')
     return fig
 
 
